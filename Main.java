@@ -125,11 +125,13 @@ class BorrowSystem{
                 case 1:
                     genreMenu(scan);
                     break;
-
-                default:
+                case 2:
                     break;
+                case 3:
+                    System.out.println("\n Thank You For Coming To Our Library!");
+                default:
+                    System.out.println("\nInvalid Choice. Please Enter a Valid Choice.");
             }
-
         } while (choice != 3);
     }
     public void genreMenu(Scanner scan){
@@ -167,10 +169,28 @@ class BorrowSystem{
         List<Book> booksByAuthor = books.stream()
         .filter(b -> b.getAuthor().equals(author) && b.getIsAvailable())
         .collect(Collectors.toList());
+        int i = 0;
         System.out.println("\n== All Available Books ==\n");
         // System.out.println("Name" + "  |  " + "BookID" + "  |  " + "Author" + "  |  " + "Genre");
         for(Book book : booksByAuthor){
-            System.out.println(book.getName() + " | " + book.getBookId() + " | " + book.getAuthor() + " | " + book.getGenre());
+            System.out.println(i + "." + " " + book.getName() + " | " + book.getBookId() + " | " + book.getAuthor() + " | " + book.getGenre());
+            i++;
+        }
+        System.out.println("\nChoose Your Book Id: ");
+        String selectedBook = scan.nextLine();
+        scan.nextLine();
+        System.out.println("\nEnter the Number of Days You Want To Borrow: ");
+        int days = scan.nextInt();
+        scan.nextLine();
+        Optional<Book> finalBook = books.stream()
+        .filter(book -> book.getBookId().equals(selectedBook) && book.getIsAvailable())
+        .findFirst();
+        if(finalBook.isPresent()){
+            Book book = finalBook.get();
+            book.borrow();
+            System.out.println("The Price for Borrow is :" + " " + book.getTotalPrice(days));
+        }else{
+            System.out.println("\nThe Book Might Not Exist In Our Database.");
         }
     }
 }
