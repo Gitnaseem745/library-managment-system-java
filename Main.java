@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 import java.util.List;
 
@@ -78,6 +79,18 @@ class BorrowSystem{
         "Literary fiction",
         "Thriller",
     };
+    List<List<String>> authorsByGenre = Arrays.asList(
+    Arrays.asList("Frank Herbert", "William Gibson", "Ursula K. Le Guin", "Aldous Huxley", "Ray Bradbury", "Cormac McCarthy", "Isaac Asimov", "Neal Stephenson", "Dan Simmons"),  // Science fiction
+    Arrays.asList("J.R.R. Tolkien", "George R.R. Martin", "Patrick Rothfuss", "Brandon Sanderson", "Scott Lynch", "Stephen King", "Brent Weeks", "Andrzej Sapkowski"),  // Fantasy
+    Arrays.asList("Bram Stoker", "Stephen King", "Mary Shelley", "William Peter Blatty", "Shirley Jackson", "Mark Z. Danielewski", "Josh Malerman"),  // Horror
+    Arrays.asList("Stieg Larsson", "Gillian Flynn", "Dan Brown", "Arthur Conan Doyle", "Agatha Christie", "Raymond Chandler", "Dashiell Hammett", "Liane Moriarty"),  // Mystery
+    Arrays.asList("Jane Austen", "Diana Gabaldon", "Nicholas Sparks", "Charlotte Brontë", "Jojo Moyes", "Graeme Simsion", "Jamie McGuire", "E.L. James"),  // Romance novel
+    Arrays.asList("Leo Tolstoy", "Kristin Hannah", "Anthony Doerr", "Markus Zusak", "Ken Follett", "Kathryn Stockett", "Charles Belfoure"),  // Historical fiction
+    Arrays.asList("Jack London", "Robert Louis Stevenson", "Arthur Conan Doyle", "Jon Krakauer", "Yann Martel", "Jules Verne"),  // Adventure fiction
+    Arrays.asList("Harper Lee", "J.D. Salinger", "F. Scott Fitzgerald", "George Orwell", "Herman Melville", "Gabriel García Márquez"),  // Literary fiction
+    Arrays.asList("Thomas Harris", "Paula Hawkins", "Robert Ludlum", "Dennis Lehane", "S.J. Watson", "Tim Lebbon")  // Thriller
+);
+
     public BorrowSystem(){
         this.books = new ArrayList<>();
         this.students = new ArrayList<>();
@@ -120,15 +133,29 @@ class BorrowSystem{
         System.out.println("\n== All Available Genres ==\n");
         int i = 0;
         for(String genre : genres){
-            System.out.println(i + " " + genre);
+            System.out.println(i + "." + " " + genre);
             i++;
         }
         System.out.println("\nChoose Your Genre: \n");
         int selectedGenre = scan.nextInt();
-        // chooseAuthor(scan, genres, selectedGenre);
-        for(int j=0; j < genres.length; j++){
-            if (j == selectedGenre) {
-            System.out.println(genres[j]);
+        if(selectedGenre >= genres.length){
+            System.out.println("\nError Selected Genre Not Found!");
+        }
+        chooseAuthor(scan, selectedGenre);
+    }
+    public void chooseAuthor(Scanner scan, int selectedGenre){
+        System.out.println("\n== All Available Authors ==\n");
+        int i = 0;
+        for(String authors : authorsByGenre.get(selectedGenre)){
+            System.out.println(i + "." + " " + authors);
+            i++;
+        }
+        System.out.println("\nChoose Your Author: \n");
+        int selectedAuthor = scan.nextInt();
+        for(int j=0; j<authorsByGenre.get(selectedGenre).size(); j++){
+            if(authorsByGenre.get(selectedGenre).get(selectedAuthor) == authorsByGenre.get(selectedGenre).get(j)){
+                System.out.println(authorsByGenre.get(selectedGenre).get(selectedAuthor));
+                break;
             }
         }
     }
@@ -237,7 +264,5 @@ class BorrowSystem{
             borrowSystem.addBook(book);
         }
         borrowSystem.mainMenu();
-        // borrowSystem.genreMenu();
-        // borrowSystem.getAllBooksName();
     }
 }
