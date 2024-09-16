@@ -49,16 +49,21 @@ class Book{
 }
 class Student{
     private String name;
+    private String id;
     private String course;
     private int year;
-    public Student(String name, String course, int year){
+    public Student(String name,String id, String course, int year){
         this.name = name;
+        this.id = id;
         this.course = course;
         this.year = year;
     }
 
     public String getStudentName(){
         return name;
+    }
+    public String getStudentID(){
+        return id;
     }
     public String getCourse(){
         return course;
@@ -67,9 +72,29 @@ class Student{
         return year;
     }
 }
+class Borrow{
+    private Book book;
+    private Student student;
+    private int days;
+    public Borrow(Book book, Student student, int days){
+        this.book = book;
+        this.student = student;
+        this.days = days;
+    }
+    public Book getBook(){
+        return book;
+    }
+    public Student getStudent(){
+        return student;
+    }
+    public int getBorrowedDays(){
+        return days;
+    }
+}
 class BorrowSystem{
     List<Book> books;
     List<Student> students;
+    List<Borrow> borrows;
     String author;
     String[] genres = {
         "Science fiction",
@@ -96,12 +121,36 @@ class BorrowSystem{
     public BorrowSystem(){
         this.books = new ArrayList<>();
         this.students = new ArrayList<>();
+        this.borrows = new ArrayList<>();
     }
     public void addBook(Book book){
         books.add(book);
     }
     public void addStudent(Student student){
         students.add(student);
+    }
+    public void borrowBook(Book book, Student student, int days){
+        if(book.getIsAvailable()){
+            book.borrow();
+            borrows.add(new Borrow(book, student, days));
+        }else{
+            System.out.println("Book Is Not Available For Borrow.");
+        }
+    }
+    public void returnBook(Book book){
+        Borrow removeBorrow = null;
+        for(Borrow borrow : borrows){
+            if(borrow.getBook() == book){
+                removeBorrow = borrow;
+                break;
+            }
+            if(removeBorrow != null){
+                borrows.remove(removeBorrow);
+                book.returnBook();
+            }else{
+                System.out.println("Book Was Not Borrowed");
+            }
+        }
     }
     // checking if books are added in the list or not
     public void getAllBooksName(){
@@ -125,6 +174,7 @@ class BorrowSystem{
                     genreMenu(scan);
                     break;
                 case 2:
+                    returnBookMenu(scan);
                     break;
                 case 3:
                     System.out.println("\n Thank You For Coming To Our Library!");
@@ -178,25 +228,56 @@ class BorrowSystem{
         }
         System.out.println("\nChoose Your Book Id: ");
         String selectedBook = scan.nextLine().trim();
+        System.out.println("Enter Your Name: ");
+        String studentName = scan.nextLine().trim();
+        System.out.println("Enter Your Course: ");
+        String studentCourse = scan.nextLine().trim();
+        System.out.println("Enter Your Course Year: ");
+        int studentYear = scan.nextInt();
         System.out.println("Enter the Number of Days You Want To Borrow: ");
         int days = scan.nextInt();
         scan.nextLine();
+        Student newStudent = new Student(studentName, "Std" + (students.size()+1), studentCourse, studentYear);
         Optional<Book> finalBook = books.stream()
         .filter(book -> book.getBookId().equals(selectedBook) && book.getIsAvailable())
         .findFirst();
         if(finalBook.isPresent()){
             Book book = finalBook.get();
-            System.out.println("\nThe Price for Borrow is :" + " " + book.getTotalPrice(days));
+            System.out.println("The Price for Borrow is :" + " " + book.getTotalPrice(days));
             System.out.println("\nDo You Want To Continue (Y/N): ");
             String confirm = scan.nextLine().trim();
             if(confirm.equalsIgnoreCase("Y")){
+                borrows.add(new Borrow(book, newStudent, days));
                 book.borrow();
-                System.out.println("\nBook Borrowed Successfully by " + "Naseem");
+                System.out.println("\n" + newStudent.getStudentName() + " From " + newStudent.getCourse() + " " + newStudent.getYear() + " Year Borrowed " + book.getName() + " by " + book.getAuthor() + " From " + book.getGenre() + " Genre For " + days + " Days at $" + book.getTotalPrice(days));
             }else{
                 System.out.println("\nError Proccess Canceled!");
             }
         }else{
             System.out.println("\nThe Book Already Borrowed Or Might Not Exist In Our Database.");
+        }
+    }
+    public void returnBookMenu(Scanner scan){
+        System.out.println("\n== Return a Borrowed Book ==\n");
+        System.out.println("Enter The Book Id You Want to Return: ");
+        String bookId = scan.nextLine();
+        Optional<Book> bookToReturn = books.stream()
+        .filter(b -> b.getBookId().equals(bookId) && !b.getIsAvailable())
+        .findFirst();
+        if(bookToReturn.isPresent()){
+            Book book = bookToReturn.get();
+            Optional<Borrow> borrowToRem = borrows.stream()
+            .filter(b -> b.getBook().equals(book))
+            .findFirst();
+            if(borrowToRem.isPresent()){
+                Student student = borrowToRem.get().getStudent();
+                returnBook(book);
+                System.out.println("Thanks " + student.getStudentName() + " The Book Is Returned Successfully!");
+            }else{
+                System.out.println("Borrowed Information Is Missing.");
+            }
+        }else{
+            System.out.println("Invalid Book ID Or Book Is Not Borrowed!");
         }
     }
 }
@@ -303,6 +384,5 @@ class BorrowSystem{
             borrowSystem.addBook(book);
         }
         borrowSystem.mainMenu();
-        // borrowSystem.getAllBooksName();
     }
 }
