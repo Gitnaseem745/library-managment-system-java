@@ -1,7 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.List;
 import java.util.Optional;
@@ -114,7 +113,7 @@ class BorrowSystem{
         Scanner scan = new Scanner(System.in);
         int choice;
         do {
-            System.out.println("\n== Welcome to our Library ==\n");
+            System.out.println("\n==== Welcome to our Library ====\n");
             System.out.println("1. Borrow a Book.");
             System.out.println("2. Return a Borrowed Book.");
             System.out.println("3. Exit.");
@@ -163,9 +162,10 @@ class BorrowSystem{
                 break;
             }
         }
-        chooseBook(scan, author);
+        chooseBook(author);
     }
-    public void chooseBook(Scanner scan, String author){
+    public void chooseBook(String author){
+        Scanner scan = new Scanner(System.in);
         List<Book> booksByAuthor = books.stream()
         .filter(b -> b.getAuthor().equals(author) && b.getIsAvailable())
         .collect(Collectors.toList());
@@ -177,9 +177,8 @@ class BorrowSystem{
             i++;
         }
         System.out.println("\nChoose Your Book Id: ");
-        String selectedBook = scan.nextLine();
-        scan.nextLine();
-        System.out.println("\nEnter the Number of Days You Want To Borrow: ");
+        String selectedBook = scan.nextLine().trim();
+        System.out.println("Enter the Number of Days You Want To Borrow: ");
         int days = scan.nextInt();
         scan.nextLine();
         Optional<Book> finalBook = books.stream()
@@ -187,10 +186,17 @@ class BorrowSystem{
         .findFirst();
         if(finalBook.isPresent()){
             Book book = finalBook.get();
-            book.borrow();
-            System.out.println("The Price for Borrow is :" + " " + book.getTotalPrice(days));
+            System.out.println("\nThe Price for Borrow is :" + " " + book.getTotalPrice(days));
+            System.out.println("\nDo You Want To Continue (Y/N): ");
+            String confirm = scan.nextLine().trim();
+            if(confirm.equalsIgnoreCase("Y")){
+                book.borrow();
+                System.out.println("\nBook Borrowed Successfully by " + "Naseem");
+            }else{
+                System.out.println("\nError Proccess Canceled!");
+            }
         }else{
-            System.out.println("\nThe Book Might Not Exist In Our Database.");
+            System.out.println("\nThe Book Already Borrowed Or Might Not Exist In Our Database.");
         }
     }
 }
@@ -297,5 +303,6 @@ class BorrowSystem{
             borrowSystem.addBook(book);
         }
         borrowSystem.mainMenu();
+        // borrowSystem.getAllBooksName();
     }
 }
