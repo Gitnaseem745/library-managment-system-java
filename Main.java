@@ -152,12 +152,6 @@ class BorrowSystem{
             }
         }
     }
-    // checking if books are added in the list or not
-    public void getAllBooksName(){
-        for(int i=0; i<books.size(); i++){
-            System.out.println(books.get(i).getName());
-        }
-    }
     public void mainMenu(){
         Scanner scan = new Scanner(System.in);
         int choice;
@@ -179,7 +173,7 @@ class BorrowSystem{
                 case 3:
                     System.out.println("\n Thank You For Coming To Our Library!");
                 default:
-                    System.out.println("\nInvalid Choice. Please Enter a Valid Choice.");
+                    break;
             }
         } while (choice != 3);
     }
