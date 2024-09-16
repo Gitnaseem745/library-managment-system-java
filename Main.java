@@ -1,7 +1,10 @@
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 import java.util.List;
+import java.util.Optional;
 
 class Book{
     private String name;
@@ -68,6 +71,7 @@ class Student{
 class BorrowSystem{
     List<Book> books;
     List<Student> students;
+    String author;
     String[] genres = {
         "Science fiction",
         "Fantasy",
@@ -90,7 +94,6 @@ class BorrowSystem{
     Arrays.asList("Harper Lee", "J.D. Salinger", "F. Scott Fitzgerald", "George Orwell", "Herman Melville", "Gabriel García Márquez"),  // Literary fiction
     Arrays.asList("Thomas Harris", "Paula Hawkins", "Robert Ludlum", "Dennis Lehane", "S.J. Watson", "Tim Lebbon")  // Thriller
 );
-
     public BorrowSystem(){
         this.books = new ArrayList<>();
         this.students = new ArrayList<>();
@@ -115,7 +118,7 @@ class BorrowSystem{
             System.out.println("1. Borrow a Book.");
             System.out.println("2. Return a Borrowed Book.");
             System.out.println("3. Exit.");
-            System.out.println("\nEnter Your Choice : \n");
+            System.out.println("\nEnter Your Choice: ");
             choice = scan.nextInt();
             scan.nextLine();
             switch (choice) {
@@ -136,7 +139,7 @@ class BorrowSystem{
             System.out.println(i + "." + " " + genre);
             i++;
         }
-        System.out.println("\nChoose Your Genre: \n");
+        System.out.println("\nChoose Your Genre: ");
         int selectedGenre = scan.nextInt();
         if(selectedGenre >= genres.length){
             System.out.println("\nError Selected Genre Not Found!");
@@ -150,16 +153,26 @@ class BorrowSystem{
             System.out.println(i + "." + " " + authors);
             i++;
         }
-        System.out.println("\nChoose Your Author: \n");
+        System.out.println("\nChoose Your Author: ");
         int selectedAuthor = scan.nextInt();
         for(int j=0; j<authorsByGenre.get(selectedGenre).size(); j++){
             if(authorsByGenre.get(selectedGenre).get(selectedAuthor) == authorsByGenre.get(selectedGenre).get(j)){
-                System.out.println(authorsByGenre.get(selectedGenre).get(selectedAuthor));
+                author = authorsByGenre.get(selectedGenre).get(selectedAuthor);
                 break;
             }
         }
+        chooseBook(scan, author);
     }
-
+    public void chooseBook(Scanner scan, String author){
+        List<Book> booksByAuthor = books.stream()
+        .filter(b -> b.getAuthor().equals(author) && b.getIsAvailable())
+        .collect(Collectors.toList());
+        System.out.println("\n== All Available Books ==\n");
+        // System.out.println("Name" + "  |  " + "BookID" + "  |  " + "Author" + "  |  " + "Genre");
+        for(Book book : booksByAuthor){
+            System.out.println(book.getName() + " | " + book.getBookId() + " | " + book.getAuthor() + " | " + book.getGenre());
+        }
+    }
 }
  class Main {
      void main(String[] args){
